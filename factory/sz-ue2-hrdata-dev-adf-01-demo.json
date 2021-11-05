@@ -1,0 +1,9 @@
+{
+	"name": "sz-ue2-hrdata-dev-adf-01-demo",
+	"location": "eastus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "1f9d848e-15b2-45e4-ad6a-5458d0ce81b7",
+		"tenantId": "4a3a385b-9d97-4bf6-b079-e6ea5096097c"
+	}
+}
