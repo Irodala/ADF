@@ -1,0 +1,45 @@
+{
+	"name": "OutputSQLTable",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "OutputSQL",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"SQLTableName": {
+				"type": "string"
+			}
+		},
+		"folder": {
+			"name": "Adam/2.Parametrized DataSets"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "ICAO",
+				"type": "nvarchar"
+			},
+			{
+				"name": "IATA",
+				"type": "nvarchar"
+			},
+			{
+				"name": "MAKER",
+				"type": "nvarchar"
+			},
+			{
+				"name": "DESCRIPTION",
+				"type": "nvarchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": {
+				"value": "@dataset().SQLTableName",
+				"type": "Expression"
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}
