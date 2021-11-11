@@ -1,6 +1,43 @@
 {
 	"name": "Incremental_load",
 	"properties": {
+		"activities": [
+			{
+				"name": "LookupoldWatermark",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "select Watermarkvalue from watermark\nwhere tablename = 'salesorderdetail'",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "WatermarkTable",
+						"type": "DatasetReference"
+					}
+				}
+			}
+		],
+		"parameters": {
+			"waterMarkCol": {
+				"type": "string",
+				"defaultValue": "ModifiedDate"
+			},
+			"srcTable": {
+				"type": "string",
+				"defaultValue": "SalesOrderDetail"
+			}
+		},
 		"folder": {
 			"name": "Rangeetha"
 		},
