@@ -17,7 +17,35 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzureSqlSource",
-						"sqlReaderQuery": "select Watermarkvalue from watermark\nwhere tablename = 'salesorderdetail'",
+						"sqlReaderQuery": {
+							"value": "select Watermarkvalue from watermark\nwhere tablename ='@{pipeline().parameters.FinalTableName}'",
+							"type": "Expression"
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "WatermarkTable",
+						"type": "DatasetReference"
+					}
+				}
+			},
+			{
+				"name": "LookupNewWaterMark",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "Select max(modifieddate) from SAlesorderdetail",
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
