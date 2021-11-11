@@ -36,6 +36,10 @@
 			"srcTable": {
 				"type": "string",
 				"defaultValue": "SalesOrderDetail"
+			},
+			"FinalTableName": {
+				"type": "string",
+				"defaultValue": "SalesOrderDetail"
 			}
 		},
 		"folder": {
