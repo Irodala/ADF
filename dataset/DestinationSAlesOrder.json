@@ -1,0 +1,12 @@
+{
+	"name": "DestinationSAlesOrder",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_ASA_BootCampStore",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlDWTable",
+		"schema": []
+	}
+}
