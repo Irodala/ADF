@@ -95,10 +95,116 @@
 					},
 					"sink": {
 						"type": "SqlDWSink",
+						"preCopyScript": {
+							"value": "Truncate Table @{pipeline().parameters.stgTableName}",
+							"type": "Expression"
+						},
 						"allowCopyCommand": true,
 						"disableMetricsCollection": false
 					},
-					"enableStaging": false
+					"enableStaging": true,
+					"stagingSettings": {
+						"linkedServiceName": {
+							"referenceName": "LS_Storage_Acc_ADLS",
+							"type": "LinkedServiceReference"
+						},
+						"path": "fsjulybootcamp"
+					},
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "SalesOrderID",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "SalesOrderID",
+									"type": "Int32"
+								}
+							},
+							{
+								"source": {
+									"name": "SalesOrderDetailID",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "SalesOrderDetailID",
+									"type": "Int32"
+								}
+							},
+							{
+								"source": {
+									"name": "OrderQty",
+									"type": "Int16"
+								},
+								"sink": {
+									"name": "OrderQty",
+									"type": "Int16"
+								}
+							},
+							{
+								"source": {
+									"name": "ProductID",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "ProductID",
+									"type": "Int32"
+								}
+							},
+							{
+								"source": {
+									"name": "UnitPrice",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "UnitPrice",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "UnitPriceDiscount",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "UnitPriceDiscount",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "LineTotal",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "LineTotal",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "rowguid",
+									"type": "Guid"
+								},
+								"sink": {
+									"name": "rowguid",
+									"type": "Guid"
+								}
+							},
+							{
+								"source": {
+									"name": "ModifiedDate",
+									"type": "DateTime"
+								},
+								"sink": {
+									"name": "ModifiedDate",
+									"type": "DateTime"
+								}
+							}
+						]
+					}
 				},
 				"inputs": [
 					{
