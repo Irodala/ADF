@@ -95,7 +95,8 @@
 					},
 					"sink": {
 						"type": "SqlDWSink",
-						"allowCopyCommand": true
+						"allowCopyCommand": true,
+						"disableMetricsCollection": false
 					},
 					"enableStaging": false
 				},
@@ -125,6 +126,18 @@
 			"FinalTableName": {
 				"type": "string",
 				"defaultValue": "SalesOrderDetail"
+			},
+			"stgTableName": {
+				"type": "string",
+				"defaultValue": "stgSalesOrderDetail"
+			},
+			"storedProcUpsert": {
+				"type": "string",
+				"defaultValue": "usp_upsert_Sales"
+			},
+			"storedProcWaterMark": {
+				"type": "string",
+				"defaultValue": "usd_update_WaterMark"
 			}
 		},
 		"folder": {
