@@ -1,0 +1,321 @@
+{
+	"name": "Incremental_load",
+	"properties": {
+		"activities": [
+			{
+				"name": "LookupoldWatermark",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": {
+							"value": "select Watermarkvalue from watermark\nwhere tablename ='@{pipeline().parameters.FinalTableName}'",
+							"type": "Expression"
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "WatermarkTable",
+						"type": "DatasetReference"
+					}
+				}
+			},
+			{
+				"name": "LookupNewWaterMark",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": {
+							"value": "Select max(@{pipeline().parameters.waterMarkCol}) as NewwaterMarkVal from @{pipeline().parameters.srcTable}",
+							"type": "Expression"
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "WatermarkTable",
+						"type": "DatasetReference"
+					}
+				}
+			},
+			{
+				"name": "CopySQLtoSA",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "LookupoldWatermark",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "LookupNewWaterMark",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": {
+							"value": "Select * from @{pipeline().parameters.srcTable}\nwhere @{pipeline().parameters.waterMarkCol} >'@{activity('LookupoldWatermark').output.firstRow.Watermarkvalue}' and @{pipeline().parameters.waterMarkCol}<='@{activity('LookupNewWaterMark').output.firstRow.NewwaterMarkVal}'",
+							"type": "Expression"
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "SqlDWSink",
+						"preCopyScript": "TRUNCATE TABLE @{pipeline().parameters.stgTableName}",
+						"allowCopyCommand": true,
+						"disableMetricsCollection": false
+					},
+					"enableStaging": true,
+					"stagingSettings": {
+						"linkedServiceName": {
+							"referenceName": "LS_Storage_Acc_ADLS",
+							"type": "LinkedServiceReference"
+						},
+						"path": "fsjulybootcamp"
+					},
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "SalesOrderID",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "SalesOrderID",
+									"type": "Int32"
+								}
+							},
+							{
+								"source": {
+									"name": "SalesOrderDetailID",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "SalesOrderDetailID",
+									"type": "Int32"
+								}
+							},
+							{
+								"source": {
+									"name": "OrderQty",
+									"type": "Int16"
+								},
+								"sink": {
+									"name": "OrderQty",
+									"type": "Int16"
+								}
+							},
+							{
+								"source": {
+									"name": "ProductID",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "ProductID",
+									"type": "Int32"
+								}
+							},
+							{
+								"source": {
+									"name": "UnitPrice",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "UnitPrice",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "UnitPriceDiscount",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "UnitPriceDiscount",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "LineTotal",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "LineTotal",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "rowguid",
+									"type": "Guid"
+								},
+								"sink": {
+									"name": "rowguid",
+									"type": "Guid"
+								}
+							},
+							{
+								"source": {
+									"name": "ModifiedDate",
+									"type": "DateTime"
+								},
+								"sink": {
+									"name": "ModifiedDate",
+									"type": "DateTime"
+								}
+							}
+						]
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "WatermarkTable",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DestinationSAlesOrder",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "MergeStgTarget",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "CopySQLtoSA",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[usp_upsert_Sales]"
+				},
+				"linkedServiceName": {
+					"referenceName": "LS_ASA_BootCampStore",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "UpdateWatermark",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "MergeStgTarget",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[usp_write_watermark]",
+					"storedProcedureParameters": {
+						"LastModifiedtime": {
+							"value": {
+								"value": "@activity('LookupNewWaterMark').output.firstRow.NewwaterMarkVal",
+								"type": "Expression"
+							},
+							"type": "DateTime"
+						},
+						"TableName": {
+							"value": {
+								"value": "@pipeline().parameters.FinalTableName",
+								"type": "Expression"
+							},
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "LS_ASD_BootCamp",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"parameters": {
+			"waterMarkCol": {
+				"type": "string",
+				"defaultValue": "ModifiedDate"
+			},
+			"srcTable": {
+				"type": "string",
+				"defaultValue": "SalesOrderDetail"
+			},
+			"FinalTableName": {
+				"type": "string",
+				"defaultValue": "SalesOrderDetail"
+			},
+			"stgTableName": {
+				"type": "string",
+				"defaultValue": "stgSalesOrderDetail"
+			},
+			"storedProcUpsert": {
+				"type": "string",
+				"defaultValue": "usp_upsert_Sales"
+			},
+			"storedProcWaterMark": {
+				"type": "string",
+				"defaultValue": "usd_update_WaterMark"
+			}
+		},
+		"folder": {
+			"name": "Rangeetha"
+		},
+		"annotations": []
+	}
+}

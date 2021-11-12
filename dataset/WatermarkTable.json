@@ -1,0 +1,23 @@
+{
+	"name": "WatermarkTable",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_ASD_BootCamp",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "TableName",
+				"type": "varchar"
+			},
+			{
+				"name": "WatermarkValue",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			}
+		]
+	}
+}
