@@ -5,6 +5,9 @@
 			"referenceName": "LS_ASD_BootCamp",
 			"type": "LinkedServiceReference"
 		},
+		"folder": {
+			"name": "Rangeetha/3rd class"
+		},
 		"annotations": [],
 		"type": "AzureSqlTable",
 		"schema": [

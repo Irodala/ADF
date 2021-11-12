@@ -5,6 +5,9 @@
 			"referenceName": "LS_ASA_BootCampStore",
 			"type": "LinkedServiceReference"
 		},
+		"folder": {
+			"name": "Rangeetha/3rd class"
+		},
 		"annotations": [],
 		"type": "AzureSqlDWTable",
 		"schema": [],
