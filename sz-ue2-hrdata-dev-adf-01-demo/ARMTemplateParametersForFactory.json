@@ -1,0 +1,24 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "sz-ue2-hrdata-dev-adf-01-demo"
+		},
+		"InputBlob_connectionString": {
+			"value": ""
+		},
+		"LS_ASA_BootCampStore_connectionString": {
+			"value": ""
+		},
+		"LS_ASD_BootCamp_connectionString": {
+			"value": ""
+		},
+		"LS_Storage_Acc_ADLS_connectionString": {
+			"value": ""
+		},
+		"OutputSQL_connectionString": {
+			"value": ""
+		}
+	}
+}
