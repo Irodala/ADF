@@ -87,7 +87,7 @@
 					"source": {
 						"type": "AzureSqlSource",
 						"sqlReaderQuery": {
-							"value": "Select * from @{pipeline().parameters.srcTable}\nwhere @{pipeline().parameters.waterMarkCol} >'@{activity('LookupoldWatermark').output.firstRow.waterMarkVal}' and @{pipeline().parameters.waterMarkCol}<='@{activity('LookupNewWaterMark').output.firstRow.NewwaterMarkVal}'",
+							"value": "Select * from @{pipeline().parameters.srcTable}\nwhere @{pipeline().parameters.waterMarkCol} >'@{activity('LookupoldWatermark').output.firstRow.Watermarkvalue}' and @{pipeline().parameters.waterMarkCol}<='@{activity('LookupNewWaterMark').output.firstRow.NewwaterMarkVal}'",
 							"type": "Expression"
 						},
 						"queryTimeout": "02:00:00",
@@ -95,10 +95,7 @@
 					},
 					"sink": {
 						"type": "SqlDWSink",
-						"preCopyScript": {
-							"value": "Truncate Table @{pipeline().parameters.stgTableName}",
-							"type": "Expression"
-						},
+						"preCopyScript": "TRUNCATE TABLE @{pipeline().parameters.stgTableName}",
 						"allowCopyCommand": true,
 						"disableMetricsCollection": false
 					},
@@ -238,6 +235,52 @@
 					"secureInput": false
 				},
 				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[usp_upsert_Sales]"
+				},
+				"linkedServiceName": {
+					"referenceName": "LS_ASA_BootCampStore",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "UpdateWatermark",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "MergeStgTarget",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[usp_write_watermark]",
+					"storedProcedureParameters": {
+						"LastModifiedtime": {
+							"value": {
+								"value": "@activity('LookupNewWaterMark').output.firstRow.NewwaterMarkVal",
+								"type": "Expression"
+							},
+							"type": "DateTime"
+						},
+						"TableName": {
+							"value": {
+								"value": "@pipeline().parameters.FinalTableName",
+								"type": "Expression"
+							},
+							"type": "String"
+						}
+					}
+				},
 				"linkedServiceName": {
 					"referenceName": "LS_ASD_BootCamp",
 					"type": "LinkedServiceReference"
