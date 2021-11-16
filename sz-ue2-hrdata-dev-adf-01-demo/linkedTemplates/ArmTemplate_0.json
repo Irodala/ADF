@@ -1283,15 +1283,21 @@
 								"referenceName": "DS_to_Target",
 								"type": "DatasetReference"
 							},
-							"name": "MoviesClean"
+							"name": "MoviesByYearSinkoutput"
 						}
 					],
 					"transformations": [
 						{
 							"name": "YearExtraction"
+						},
+						{
+							"name": "MoviesByYear"
+						},
+						{
+							"name": "Aggregate2"
 						}
 					],
-					"script": "source(output(\n\t\tmovieId as string,\n\t\ttitle as string,\n\t\tgenres as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> Movies\nMovies derive(Year = toInteger(trim(right(title, 6), '()'))\r\n,\n\t\ttitle = toString(left(title, length(title) -6))) ~> YearExtraction\nYearExtraction sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['Transformed Movies file.csv'],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tpartitionBy('hash', 1)) ~> MoviesClean"
+					"script": "source(output(\n\t\tmovieId as string,\n\t\ttitle as string,\n\t\tgenres as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> Movies\nMovies derive(Year = toInteger(trim(right(title, 6), '()'))\r\n,\n\t\ttitle = toString(left(title, length(title) -6))) ~> YearExtraction\nYearExtraction aggregate(groupBy(Year),\n\tMoviesCount = count()) ~> MoviesByYear\nYearExtraction aggregate(groupBy(Year),\n\tMoviesByYear = count()) ~> Aggregate2\nMoviesByYear sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['MoviesByYear'],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tpartitionBy('hash', 1)) ~> MoviesByYearSinkoutput"
 				}
 			},
 			"dependsOn": [
