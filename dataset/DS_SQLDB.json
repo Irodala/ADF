@@ -1,0 +1,15 @@
+{
+	"name": "DS_SQLDB",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_ASD_BootCamp",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Adam/5. Copy Multiple Tables"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": []
+	}
+}
