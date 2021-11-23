@@ -1,0 +1,25 @@
+{
+	"name": "MyExcel",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "InputBlob",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Adam/6.Process Excel File"
+		},
+		"annotations": [],
+		"type": "Excel",
+		"typeProperties": {
+			"sheetName": "Persons",
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "data.xlsx",
+				"container": "input"
+			},
+			"range": "C9:E13",
+			"firstRowAsHeader": true
+		},
+		"schema": []
+	}
+}

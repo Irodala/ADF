@@ -1,0 +1,26 @@
+{
+	"name": "ExcelOutput",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "InputBlob",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Adam/6.Process Excel File"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "OutputExcel.csv",
+				"container": "output"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	}
+}
